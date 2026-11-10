@@ -211,7 +211,6 @@ body {
     /* Subtitle */
     & h3 {
       margin-top: 0;
-      text-decoration: underline;
 
       &::empty {
         height: 0;
@@ -225,6 +224,7 @@ body {
       margin: 0;
       opacity: var(--dimmer);
       text-decoration: none;
+      font-style: normal;
     }
 
     /* Link to organization home page */
@@ -475,6 +475,11 @@ code:not([class]) {
 
 h2, h3 {
   margin-top: 3.2rem;
+  text-decoration: underline;
+}
+
+h4 {
+  font-style: italic;
 }
 
 h2 code:not([class]), /* :not([class]) needed for specificity */
@@ -1039,6 +1044,23 @@ details {
 
     & summary::after {
       content: url("svg/warn.svg");
+    }
+  }
+
+  /* Hide & disable disclosure triangle for always-open details */
+  /* alert,challenge,env,feedback,hint,note,pivot,question,
+     sandbox,solution,story,tip,tldr,trouble,warn
+  */
+  &:not(.solution, .story, .tldr) > summary {
+    list-style: none; /* Firefox */
+    pointer-events: none;
+
+    & ::-webkit-details-marker {
+      display: none; /* Chrome, Safari, Edge */
+    }
+
+    &::marker {
+      content: ""; /* standard, newer browsers */
     }
   }
 
