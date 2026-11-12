@@ -151,6 +151,25 @@ exec(makeDirectories, (error, stdout, stderr) => {
 
 
 
+// console.log("ADD docs/settings.json")
+const settings = join(fullPath, "docs", "settings.json")
+const setScript = `touch ${settings} && cat > ${settings} <<EOF
+{
+  "os-filter": false
+}
+EOF`
+
+  exec(setScript, (error, stdout, stderr) => {
+    if (error) {
+      console.log(`settings.json error: ${error.message}`)
+
+    } else if (stderr) {
+      console.log(`settings.json stderr: ${stderr}`)
+    }
+  })
+
+
+
 // console.log("ADD publish.js")
 const publish = join(fullPath, "publish.js")
 const root = `${organization}.github.io`

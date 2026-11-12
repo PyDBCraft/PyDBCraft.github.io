@@ -2,6 +2,7 @@
  * menu/script.js
  *
  * Plain vanilla script to:
+ * - Show os-filter selector, if required
  * - Populate and control a menu which slides out when its
  *   hamburger icon is clicked
  * - Control a footer with #previous and #next buttons
@@ -19,9 +20,68 @@ const menu     = document.getElementById("menu")
 const icon     = document.getElementById("menu-icon")
 const list     = document.getElementById("menu-items")
 
+fetch("settings.json")
+.then(response => response.json())
+.then(treatSettings)
+.catch(() => {}) // settings.json doesn't exist; ignore it
+
+
+function treatSettings(settings){
+  const filterSettings = settings["os-filter"]
+  if (filterSettings) {
+    // Show div#os-filter in the menu
+    const osFilter = document.getElementById("os-filter")
+    osFilter.classList.add("active")
+    // Make room for it
+    document.documentElement.style.setProperty("--filter-height", "2em")
+
+    const select = osFilter.querySelector("select")
+    if (typeof filterSettings === "object") {
+      // Customize select options
+      while(select.firstChild){
+          select.removeChild(select.firstChild);
+      }
+      const entries = Object.entries(filterSettings)
+      // [[ "win": "Windows"], ... ]
+      entries.forEach(entry => {
+        const option = document.createElement("option")
+        option.value = entry[0]
+        option.textContent = entry[1]
+        select.append(option)
+      })
+    }
+    // Set its value to match the current OS, if possible
+    select.value = (/linux/i.test(navigator.userAgent))
+      ? (Object.keys(filterSettings).indexOf("nux") < 0)
+        ? "mac"
+        : "nux"
+      : (/mac/i.test(navigator.userAgent))
+        ? "mac"
+        : "win"
+
+    const osSpecific = Array.from(document.querySelectorAll(".os"))
+    select.addEventListener("change", showForOS)
+
+    function showForOS({ target }) {
+      const { value } = target
+      console.log("value:", value)
+
+      osSpecific.forEach(element => {
+        const show = (element.classList.contains(value))
+        const action = (show)
+          ? "add"
+          : "remove"
+        element.classList[action]("active")
+      })
+    }
+
+    showForOS({ target: select })
+  }
+}
+
 // Find radio buttons for Dark/Light, Paging/Scroll
 const controls = Array.from(menu.querySelectorAll(
-  "nav#menu label:has(input[type=radio])"
+  "nav#menu label:has(input[type=radio]), select"
 ))
 // Add icon and list to include all interactive menu elements
 controls.push(icon)
@@ -97,21 +157,21 @@ sections.forEach(( section, index ) => {
     a.textContent = sectionName
     li.append(a)
 
-    if (index === lastIndex) {
-      // The last child should appear with no hash/target,
-      // and should appear first in the menu
-      // a.setAttribute("href", `/`)
-      list.prepend(li)
+    // if (index === lastIndex) {
+    //   // The last child should appear with no hash/target,
+    //   // and should appear first in the menu
+    //   // a.setAttribute("href", `/`)
+    //   list.prepend(li)
 
-      noHash = id
-      sectionIds.unshift(id)
-      sectionNames.unshift(sectionName)
+    //   noHash = id
+    //   sectionIds.unshift(id)
+    //   sectionNames.unshift(sectionName)
 
-    } else {
+    // } else {
       list.append(li)
       sectionIds.push(id)
       sectionNames.push(sectionName)
-    }
+    // }
 
     menuItems.push(li)
   }

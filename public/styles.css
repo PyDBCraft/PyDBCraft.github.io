@@ -15,10 +15,12 @@
   --icon-size: calc(var(--ratio) * var(--menu-width));
   --list-width: calc(var(--menu-width) - 1rem);
   --repo-size: 11.8rem;
+  --filter-height: 0px;
   --items-height: calc(
     100vh
     - var(--icon-size)
     - var(--repo-size)
+    - var(--filter-height)
     - var(--header-size)
   );
   --svg-margin: 0.64rem;
@@ -63,7 +65,7 @@
   --tldr:      #77b;
   --trouble:   #fc9;
   --warn:      #fbb;
-  --code:      #0001;
+  --code:      #0002;
   --codeblock: #000c;
 
   /* Paging / Theme */
@@ -128,7 +130,7 @@ body:has(#theme-dark:checked) {
   --tldr:      #004;
   --trouble:   #c60;
   --warn:      #630;
-  --code:      #fff1;
+  --code:      #fff2;
   --codeblock: #0006;
 
   /* Paging / Theme */
@@ -370,17 +372,17 @@ section[data-item]:last-of-type {
 }
 
 body:has(#pages:checked) {
-  /* Hide all sections, including last if there's a :target... */
+  /* Hide all sections, including first if there's a :target... */
   section[data-item],
-  section[data-item]:target ~ section[data-item]:last-of-type {
+  &:has(:target) section[data-item]:first-of-type:not(:target) {
     height: 0;
     width: 0;
     overflow: hidden;
   }
 
-  /* ...but show the :target if there is one, or last, if not */
+  /* ...but show the :target if there is one, or first, if not */
   section:target,
-  section:last-of-type {
+  section:first-of-type {
     height: auto;
     width: auto;
     overflow: auto;
@@ -757,7 +759,6 @@ button[data-name]:hover {
 
   transition: left .4s linear;
 
-
   &.open {
     left: 0;
 
@@ -805,6 +806,22 @@ button[data-name]:hover {
         content: counter(menu) ". ";
       }
     }
+  }
+}
+
+div#os-filter {
+  text-align: center;
+  margin: 0.125em 0;
+  display: none;
+
+  &.active {
+    display: block;
+    pointer-events: all;
+  }
+
+  select {
+    background-color: var(--dark);
+    color: var(--light);
   }
 }
 
@@ -1051,7 +1068,7 @@ details {
   /* alert,challenge,env,feedback,hint,note,pivot,question,
      sandbox,solution,story,tip,tldr,trouble,warn
   */
-  &:not(.solution, .story, .tldr) > summary {
+  &:not(.solution, .story, .tldr, .trouble) > summary {
     list-style: none; /* Firefox */
     pointer-events: none;
 
@@ -1075,6 +1092,73 @@ details {
 
     & .skip {
       background-color: transparent;
+    }
+  }
+}
+
+/* OS-specific sections */
+.os {
+  position: relative;
+  border-right: 1px solid #fff6;
+  box-sizing: border-box;
+
+  &:not(.active),
+  &:not(.active) * {
+    /* Hide by default... */
+    position: relative;
+    height: 0;
+    opacity: 0;
+
+    /* Collapse <pre class="line-numbers"> for other OSes */
+    & p,
+    & h3,
+    & pre.line-numbers,
+    & figcaption {
+      margin: 0!important;
+    }
+  }
+
+  /* Then show if active */
+  &.active,
+  &.active *:not(summary) {
+    /* height: auto;
+    opacity: 1; */
+
+    &::after {
+      font-size: 0.625em;
+      opacity: 0.5;
+      position: absolute;
+      top: -1em;
+      right: 0;
+      z-index: 1;
+    }
+
+    &.win::after {
+      content: "Windows";
+    }
+
+    &.mac::after {
+      content: "MacOS";
+    }
+
+    &.nux::after {
+      content: "Linux";
+    }
+
+    &.win.mac::after {
+      content: "Windows, MacOS";
+    }
+
+    &.win.nux::after {
+      content: "Windows, Linux";
+    }
+
+    &.mac.nux::after {
+      content: "MacOS, Linux";
+    }
+
+    &.win.mac.nux::after {
+      content: "Windows, MacOS, Linux";
     }
   }
 }
