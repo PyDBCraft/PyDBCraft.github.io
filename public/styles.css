@@ -99,6 +99,7 @@
 
   /* Footer */
   --footer-height: 3.2rem;
+  --footer-margin: 3.2rem;
   --footer-top: calc(100vh - var(--footer-height))
 }
 
@@ -163,7 +164,7 @@ body {
   margin: 0 auto;
   padding: 0; /* 1.6rem; */
 
-  overflow: auto;
+  overflow: hidden;
 
   /* Ensure short content is pushed to the top */
   & > .spacer {
@@ -255,7 +256,9 @@ body {
   #content-header,
   #content-footer {
     height: var(--footer-height);
-    margin: var(--footer-height) 0;
+    /* margin: var(--footer-height) 0; */
+    margin-top: var(--footer-margin);
+
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -350,6 +353,10 @@ body {
 /* No menu or footer if no sections */
 #content:not(:has(section)),
 body:not(:has(#pages:checked)) {
+  & #content {
+    overflow: auto
+  }
+
   & ~ #menu,
   #article-header,
   #article-footer
@@ -365,10 +372,10 @@ body:not(:has(#pages:checked)) {
 /* Show non last-of-type sections after last-of-type */
 section[data-item] {
   padding-top: var(--header-size);
-  order: 1;
+  /* order: 1;
 }
 section[data-item]:last-of-type {
-  order: 0
+  order: 0 */
 }
 
 body:has(#pages:checked) {
@@ -1105,7 +1112,8 @@ details {
   &:not(.active),
   &:not(.active) * {
     /* Hide by default... */
-    position: relative;
+    position: absolute;
+    width: 0;
     height: 0;
     opacity: 0;
 
@@ -1124,41 +1132,43 @@ details {
     /* height: auto;
     opacity: 1; */
 
-    &::after {
-      font-size: 0.625em;
-      opacity: 0.5;
-      position: absolute;
-      top: -1em;
-      right: 0;
-      z-index: 1;
-    }
+    &:not(.anon) {
+      &::after {
+        font-size: 0.625em;
+        opacity: 0.5;
+        position: absolute;
+        top: -1em;
+        right: 0;
+        z-index: 1;
+      }
 
-    &.win::after {
-      content: "Windows";
-    }
+      &.win::after {
+        content: "Windows";
+      }
 
-    &.mac::after {
-      content: "MacOS";
-    }
+      &.mac::after {
+        content: "MacOS";
+      }
 
-    &.nux::after {
-      content: "Linux";
-    }
+      &.nux::after {
+        content: "Linux";
+      }
 
-    &.win.mac::after {
-      content: "Windows, MacOS";
-    }
+      &.win.mac::after {
+        content: "Windows, MacOS";
+      }
 
-    &.win.nux::after {
-      content: "Windows, Linux";
-    }
+      &.win.nux::after {
+        content: "Windows, Linux";
+      }
 
-    &.mac.nux::after {
-      content: "MacOS, Linux";
-    }
+      &.mac.nux::after {
+        content: "MacOS, Linux";
+      }
 
-    &.win.mac.nux::after {
-      content: "Windows, MacOS, Linux";
+      &.win.mac.nux::after {
+        content: "Windows, MacOS, Linux";
+      }
     }
   }
 }
@@ -1242,7 +1252,7 @@ div.paging {
 }
 
 div.paging {
-  margin-left: 95px;
+  margin-left: 140px;
 }
 
 .skip {

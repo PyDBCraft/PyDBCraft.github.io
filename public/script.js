@@ -64,7 +64,6 @@ function treatSettings(settings){
 
     function showForOS({ target }) {
       const { value } = target
-      console.log("value:", value)
 
       osSpecific.forEach(element => {
         const show = (element.classList.contains(value))
@@ -315,7 +314,6 @@ function setTargetClassInMenu(hash) {
 
 
 function scrollIfNeeded(element) {
-  console.log("element:", element, element.tagName)
   const { top: up, bottom: down } = list.getBoundingClientRect()
   const { top, bottom } = element.getBoundingClientRect()
 
@@ -550,7 +548,7 @@ function showAnchor({ target }) {
       return
     }
 
-    hash = anchor.closest("section[id]").id
+    const hash = anchor.closest("section[data-item]").id
     location.hash = hash
     anchor.classList.add("highlight")
 
@@ -559,6 +557,9 @@ function showAnchor({ target }) {
     // before scrolling to the anchor and removing the highlight.
     setTimeout(() => {
       anchor.scrollIntoView()
+      if (pages.checked) {
+        main.scrollTop = 0
+      }
       anchor.classList.remove("highlight")
     }, 10)
   }
